@@ -1,0 +1,93 @@
+// Hello World - This is the beginning of 'Switch' 
+// Written by Kevin Rao 2025 
+
+(function (global) {
+  var switchJS = {        
+    adUnits: [
+      {
+        code: "div-gpt-ad-homepage-billboard",
+        mediaTypes: {
+          banner: {
+            sizes: [[970, 250], [728, 90],[1,1],
+          },
+        },
+        bids: [
+          {
+            bidder: "appnexus",
+            params: { placementId: "16487771" },
+          },
+        ],
+      },
+    ],
+
+    publisherName: "gumtreeau",
+    targetingParams: {},
+
+    setPublisher: function (name) {
+      this.publisherName = name;
+    },
+
+    setTargeting: function (key, value) {
+      this.targetingParams[key] = value;
+      return this;
+    },
+
+    loadGPT: function () {
+      var gads = document.createElement("script");
+      gads.src = "https://securepubads.g.doubleclick.net/tag/js/gpt.js";
+      gads.async = true;
+      document.head.appendChild(gads);
+    },
+
+    loadPrebid: function () {
+      var pbjs = global.pbjs || (global.pbjs = { que: [] });
+      var script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/prebid.js@latest/dist/not-for-prod/prebid.js";
+      script.async = true;
+      document.head.appendChild(script);
+    },
+
+    initAdManager: function () {
+      global.googletag = global.googletag || { cmd: [] };
+      global.pbjs = global.pbjs || { que: [] };
+
+      pbjs.que.push(() => {
+        pbjs.addAdUnits(this.adUnits);
+        pbjs.requestBids({
+          bidsBackHandler: () => {
+            googletag.cmd.push(() => {
+              pbjs.setTargetingForGPTAsync();
+              googletag.pubads().refresh();
+            });
+          },
+        });
+      });
+    },
+
+    defineAdSlots: function () {
+      googletag.cmd.push(() => {
+        this.adUnits.forEach((unit) => {
+          var slot = googletag
+            .defineSlot("/178531392/gumtree.web/home", unit.mediaTypes.banner.sizes, unit.code)
+            .addService(googletag.pubads());
+
+          for (var key in this.targetingParams) {
+            slot.setTargeting(key, this.targetingParams[key]);
+          }
+
+          googletag.enableServices();
+        });
+      });
+    },
+
+    loadAds: function () {
+      this.loadGPT();
+      this.loadPrebid();
+      this.initAdManager();
+      this.defineAdSlots();
+    },
+  };
+
+
+  global.switchJS = switchJS;
+})(window);
