@@ -8,7 +8,7 @@
         code: "div-gpt-ad-homepage-billboard",
         mediaTypes: {
           banner: {
-            sizes: [[970, 250], [728, 90],[1,1],
+            sizes: [[970, 250], [728, 90],[1,1]],
           },
         },
         bids: [
